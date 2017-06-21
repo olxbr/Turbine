@@ -15,15 +15,7 @@
  */
 package com.netflix.turbine.discovery;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Splitter;
-import com.netflix.config.DynamicPropertyFactory;
 
 /**
  * Class that encapsulates an {@link InstanceDiscovery} implementation that uses AWS directly to query the instances from a given ASG.
@@ -37,64 +29,21 @@ import com.netflix.config.DynamicPropertyFactory;
  * @author cfregly
  */
 public class AwsInstanceDiscovery implements InstanceDiscovery {    
-    private static final Logger logger = LoggerFactory.getLogger(AwsInstanceDiscovery.class);
-
-    // ASGs to be queried
-    private final String asgNames = DynamicPropertyFactory.getInstance().getStringProperty(TURBINE_AGGREGATOR_CLUSTER_CONFIG, "").get();
-    private final List<String> asgNameList = new ArrayList<String>();
-    
-    private static final Splitter SPLITTER = Splitter.on(',')
-		       .trimResults()
-		       .omitEmptyStrings();
     
     private final AwsUtil awsUtil;
     
     public AwsInstanceDiscovery() {
-        Iterable<String> asgNamesIter = SPLITTER.split(asgNames);
-        for (String asgName : asgNamesIter) {
-        	asgNameList.add(asgName);
-        }
-
-        logger.info("Fetching instance list for asgs: " + asgNameList);
-
         awsUtil = new AwsUtil();
     }
     
     /**
-     * Method that queries AWS for a list of instances for the configured ASG names
+     * Method that queries AWS for a list of instances for the configured app and env names
      * 
      * @return collection of Turbine instances
      */
     @Override
     public Collection<Instance> getInstanceList() throws Exception {
-        List<Instance> instances = new ArrayList<Instance>();
-        
-        for (String asgName : asgNameList) {
-            try {
-                instances.addAll(getInstancesForAsg(asgName));
-            } catch (Exception e) {
-                logger.error("Failed to fetch instances for asg: " + asgName + ", retrying once more", e);
-                try {
-                    instances.addAll(getInstancesForAsg(asgName));
-                } catch (Exception e1) {
-                    logger.error("Failed again to fetch instances for asg: " + asgName + ", giving up", e);
-                }
-            }
-        }
-        return instances;
+        return awsUtil.getTurbineInstances();
     }
     
-    /**
-     * Private helper that fetches the Instances for each asg.
-     * 
-     * @param asgName
-     * @return collection of Turbine instances for a particular asg using the {@link AwsUtil} helper.
-     * 
-     * @throws Exception
-     */
-    private List<Instance> getInstancesForAsg(String asgName) throws Exception {
-    	logger.info("Fetching instances for asg: " + asgName);
-                
-    	return awsUtil.getTurbineInstances(asgName); 
-    }    
 }

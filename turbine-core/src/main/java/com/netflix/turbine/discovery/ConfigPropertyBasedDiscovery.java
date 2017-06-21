@@ -90,17 +90,6 @@ public class ConfigPropertyBasedDiscovery implements InstanceDiscovery {
             new ConfigPropertyBasedDiscovery().getInstanceList();
         }
 
-        @Test(expected=Exception.class)
-        public void testWrongClusterConfigured() throws Exception {
-            
-            ConfigurationManager.getConfigInstance().setProperty(TURBINE_AGGREGATOR_CLUSTER_CONFIG, "test");
-            try {
-                new ConfigPropertyBasedDiscovery().getInstanceList();
-            } finally {
-                ConfigurationManager.getConfigInstance().setProperty(TURBINE_AGGREGATOR_CLUSTER_CONFIG, "");
-            }
-        }
-        
         @Test
         public void testUsingDefaults() throws Exception {
             
