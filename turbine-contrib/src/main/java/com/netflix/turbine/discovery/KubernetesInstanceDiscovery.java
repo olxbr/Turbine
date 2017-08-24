@@ -15,7 +15,7 @@ import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 
 public class KubernetesInstanceDiscovery implements InstanceDiscovery {
 
-  private static final String APP_LABEL = "app";
+  private static final String HYSTRIXID_LABEL = "hystrixid";
   private static final String K8S_TOKEN_ENV = "K8S_TOKEN";
 
   private final DynamicStringProperty NAMESPACE = DynamicPropertyFactory.getInstance()
@@ -33,7 +33,7 @@ public class KubernetesInstanceDiscovery implements InstanceDiscovery {
       final Config config = new Config();
       config.setOauthToken(getenv(K8S_TOKEN_ENV));
       defaultKubernetesClient = new DefaultKubernetesClient(config);
-      final PodList pods = defaultKubernetesClient.pods().inNamespace(NAMESPACE.get()).withLabel(APP_LABEL, APP.get())
+      final PodList pods = defaultKubernetesClient.pods().inNamespace(NAMESPACE.get()).withLabel(HYSTRIXID_LABEL, APP.get())
           .list();
       for (Pod pod : pods.getItems()) {
         final String ip = pod.getStatus().getPodIP();
