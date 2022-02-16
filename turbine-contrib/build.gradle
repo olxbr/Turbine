@@ -11,7 +11,6 @@ allprojects {
 
 dependencies {
     compile project(":turbine-core")
-
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.35'
     compile 'com.netflix.archaius:archaius-core:0.4.1'
