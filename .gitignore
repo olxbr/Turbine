@@ -64,3 +64,4 @@ bin/
 
 # NetBeans specific files/directories
 .nbattrs
+!.github/*
